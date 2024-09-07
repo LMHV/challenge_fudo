@@ -4,29 +4,40 @@ import { FormData, RegisterFormSchema } from "../types/RegisterFormTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Loader } from "./Loader";
+import { useNavigate } from "react-router-dom";
+import { IRegisterUserResponse } from "../interfaces/RegisterUser";
+import { toast } from "sonner";
 
 export function RegisterForm() {
+  const navigate = useNavigate();
+
   const registerUser = useMutation({
-    mutationFn: (formData: BodyInit) => {
-      return fetch("/accounts", {
+    mutationFn: async (formData: FormData) => {
+      const response = await fetch("http://localhost:3000/accounts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: formData,
+        body: JSON.stringify(formData),
       });
+
+      if (!response.ok) {
+        throw new Error("Error en la creación de usuario.");
+      }
+
+      const data: IRegisterUserResponse = await response.json();
+      return data;
     },
-    retry: 2,
-    retryDelay: 2000,
-    onError: (error: Error) => {
-      console.log('error', error)
-      // TODO
-      // Toast error + clean form
+    onSuccess: async (data) => {
+      if (data?.token) {
+        window.localStorage.setItem("token", data.token);
+        navigate("/home");
+      } else {
+        toast.error("Error en la creación de usuario.", { position: "top-center" });
+      }
     },
-    onSuccess: (data: Response) => {
-      console.log(data)
-      // TODO
-      // Toast success + clean form + redirigir
+    onError: async (error: Error) => {
+      toast.error(error.message, { position: "top-center" });
     },
   });
 
@@ -41,15 +52,11 @@ export function RegisterForm() {
   });
 
   const onSubmit = async (data: FormData) => {
-    try {
-      registerUser.mutate(JSON.stringify(data));
-    } catch ( error ) {
-      console.log(error)
-    }
+    registerUser.mutate(data);
   };
 
   return (
-    <div className="border my-14 py-5 px-10 rounded-xl shadow-lg w-[300px] sm:w-[400px] max-w-[400px] flex flex-col items-center gap-y-3">
+    <div className="border my-14 py-5 px-10 rounded-xl shadow-sm w-[300px] sm:w-[400px] max-w-[400px] flex flex-col items-center gap-y-3 hover:shadow-primary/40 hover:shadow-md transition-all duration-100">
       <div className="flex flex-col gap-1 items-center justify-center">
         <h2 className="text-2xl font-bold text-gray-900">Registrarse</h2>
         <span className="text-primary text-sm font-medium">
@@ -109,12 +116,11 @@ export function RegisterForm() {
         />
         <button
           type="submit"
-          disabled={!isValid || registerUser.isPending || registerUser.isError}
+          disabled={!isValid || registerUser.isPending}
           className="flex items-center justify-center disabled:opacity-50 disabled:bg-gray-500 disabled:border-gray-400 disabled:pointer-events-none border-2 border-primary bg-primary rounded-lg text-white font-semibold hover:bg-white hover:outline-2 hover:outline-primary  hover:text-primary transition-all duration-200 p-2 mt-2"
         >
-          {registerUser.isPending ? <Loader/> : "Registrarse"}
+          {registerUser.isPending ? <Loader /> : "Registrarse"}
         </button>
-        
       </form>
     </div>
   );

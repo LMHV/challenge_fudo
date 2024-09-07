@@ -2,16 +2,16 @@ export function Footer() {
 
 
   return (
-    <footer className="w-full bg-gray-900">
-      <div className="max-w-2xl mx-auto text-white py-5">
+    <footer className="w-full bg-gray-200">
+      <div className="max-w-7xl mx-auto text-white py-5">
         <div className="flex flex-col md:flex-row md:justify-between items-center text-sm text-gray-400">
-          <p className="order-2 md:order-1 mt-8 md:mt-0">
+          <span className="order-2 md:order-1 mt-8 md:mt-0 text-primary">
             &copy; FUDO, {new Date().getFullYear()}.
-          </p>
-          <div className="order-1 md:order-2">
-            <span className="px-2">About us</span>
-            <span className="px-2 border-l">Contact us</span>
-            <span className="px-2 border-l">Privacy Policy</span>
+          </span>
+          <div className="order-1 md:order-2 text-gray-600">
+            <a href="/" className="px-2">About us</a>
+            <a href="/" className="px-2">Contact us</a>
+            <a href="/" className="px-2">Privacy Policy</a>
           </div>
         </div>
       </div>

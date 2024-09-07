@@ -1,15 +1,15 @@
-import { Footer } from "./components/Footer";
-import { Header } from "./components/Header";
-import { RegisterForm } from "./components/RegisterForm";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { SignUpPage } from "./pages/SignUpPage";
+import { HomePage } from './pages/HomePage';
+
 
 export function App() {
   return (
-    <div className="min-h-[100dvh] grid grid-rows-[auto_1fr_auto]">
-      <Header />
-      <main className="grid place-content-center">
-        <RegisterForm />
-      </main>
-      <Footer />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<SignUpPage />} />
+        <Route path="/home" element={<HomePage />} />
+      </Routes>
+    </Router>    
   );
 }
