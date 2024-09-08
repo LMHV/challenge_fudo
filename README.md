@@ -1,4 +1,4 @@
-udo Challenge
+Fudo Challenge
 This project is built with React using TypeScript and npm for package management.
 
 Prerequisites
